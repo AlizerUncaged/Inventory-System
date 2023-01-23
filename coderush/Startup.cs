@@ -28,36 +28,41 @@ namespace coderush
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            {
+                options.EnableSensitiveDataLogging();
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             // Get Identity Default Options
-            IConfigurationSection identityDefaultOptionsConfigurationSection = Configuration.GetSection("IdentityDefaultOptions");
+            IConfigurationSection identityDefaultOptionsConfigurationSection =
+                Configuration.GetSection("IdentityDefaultOptions");
 
             services.Configure<IdentityDefaultOptions>(identityDefaultOptionsConfigurationSection);
 
             var identityDefaultOptions = identityDefaultOptionsConfigurationSection.Get<IdentityDefaultOptions>();
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                // Password settings
-                options.Password.RequireDigit = identityDefaultOptions.PasswordRequireDigit;
-                options.Password.RequiredLength = identityDefaultOptions.PasswordRequiredLength;
-                options.Password.RequireNonAlphanumeric = identityDefaultOptions.PasswordRequireNonAlphanumeric;
-                options.Password.RequireUppercase = identityDefaultOptions.PasswordRequireUppercase;
-                options.Password.RequireLowercase = identityDefaultOptions.PasswordRequireLowercase;
-                options.Password.RequiredUniqueChars = identityDefaultOptions.PasswordRequiredUniqueChars;
+                {
+                    // Password settings
+                    options.Password.RequireDigit = identityDefaultOptions.PasswordRequireDigit;
+                    options.Password.RequiredLength = identityDefaultOptions.PasswordRequiredLength;
+                    options.Password.RequireNonAlphanumeric = identityDefaultOptions.PasswordRequireNonAlphanumeric;
+                    options.Password.RequireUppercase = identityDefaultOptions.PasswordRequireUppercase;
+                    options.Password.RequireLowercase = identityDefaultOptions.PasswordRequireLowercase;
+                    options.Password.RequiredUniqueChars = identityDefaultOptions.PasswordRequiredUniqueChars;
 
-                // Lockout settings
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(identityDefaultOptions.LockoutDefaultLockoutTimeSpanInMinutes);
-                options.Lockout.MaxFailedAccessAttempts = identityDefaultOptions.LockoutMaxFailedAccessAttempts;
-                options.Lockout.AllowedForNewUsers = identityDefaultOptions.LockoutAllowedForNewUsers;
+                    // Lockout settings
+                    options.Lockout.DefaultLockoutTimeSpan =
+                        TimeSpan.FromMinutes(identityDefaultOptions.LockoutDefaultLockoutTimeSpanInMinutes);
+                    options.Lockout.MaxFailedAccessAttempts = identityDefaultOptions.LockoutMaxFailedAccessAttempts;
+                    options.Lockout.AllowedForNewUsers = identityDefaultOptions.LockoutAllowedForNewUsers;
 
-                // User settings
-                options.User.RequireUniqueEmail = identityDefaultOptions.UserRequireUniqueEmail;
+                    // User settings
+                    options.User.RequireUniqueEmail = identityDefaultOptions.UserRequireUniqueEmail;
 
-                // email confirmation require
-                options.SignIn.RequireConfirmedEmail = identityDefaultOptions.SignInRequireConfirmedEmail;
-            })
+                    // email confirmation require
+                    options.SignIn.RequireConfirmedEmail = identityDefaultOptions.SignInRequireConfirmedEmail;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -67,9 +72,15 @@ namespace coderush
                 // Cookie settings
                 options.Cookie.HttpOnly = identityDefaultOptions.CookieHttpOnly;
                 options.Cookie.Expiration = TimeSpan.FromDays(identityDefaultOptions.CookieExpiration);
-                options.LoginPath = identityDefaultOptions.LoginPath; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
-                options.LogoutPath = identityDefaultOptions.LogoutPath; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
-                options.AccessDeniedPath = identityDefaultOptions.AccessDeniedPath; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
+                options.LoginPath =
+                    identityDefaultOptions
+                        .LoginPath; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
+                options.LogoutPath =
+                    identityDefaultOptions
+                        .LogoutPath; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
+                options.AccessDeniedPath =
+                    identityDefaultOptions
+                        .AccessDeniedPath; // If the AccessDeniedPath is not set here, ASP.NET Core will default to /Account/AccessDenied
                 options.SlidingExpiration = identityDefaultOptions.SlidingExpiration;
             });
 
@@ -90,17 +101,14 @@ namespace coderush
             services.AddTransient<IRoles, Roles>();
 
             services.AddTransient<IFunctional, Functional>();
-            
+
             services.AddMvc()
-            .AddJsonOptions(options =>
-            {
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                //pascal case json
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                
-            });
-
-
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    //pascal case json
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
