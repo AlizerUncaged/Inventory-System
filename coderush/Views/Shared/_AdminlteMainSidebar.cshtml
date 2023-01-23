@@ -2,7 +2,16 @@
 @inject coderush.Data.ApplicationDbContext Context
 
 @{
-    UserProfile profile = Context.UserProfile.SingleOrDefault(x => x.ApplicationUserId.Equals(Model.Id));
+    UserProfile profile = new UserProfile();
+
+    if (Model != null)
+    {
+        var nProfile = Context.UserProfile.SingleOrDefault(x => x.ApplicationUserId.Equals(Model.Id));
+        if (nProfile != null)
+        {
+            profile = nProfile;
+        }
+    }
 }
 <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->

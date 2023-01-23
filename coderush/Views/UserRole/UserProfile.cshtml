@@ -1,15 +1,20 @@
 ﻿@using Microsoft.EntityFrameworkCore
 @model coderush.Models.ApplicationUser
+
 @inject coderush.Data.ApplicationDbContext Context
 @{
     ViewData["Title"] = "User Profile";
     var model = Model;
-    UserProfile profile = new UserProfile();
 
-    var nProfile = Context.UserProfile.SingleOrDefault(x => x.ApplicationUserId.Equals(Model.Id));
-    if (nProfile != null)
+    UserProfile profile = new UserProfile();
+    
+    if (model != null)
     {
-        profile = nProfile;
+        var nProfile = Context.UserProfile.SingleOrDefault(x => x.ApplicationUserId.Equals(model.Id));
+        if (nProfile != null)
+        {
+            profile = nProfile;
+        }
     }
 }
 
